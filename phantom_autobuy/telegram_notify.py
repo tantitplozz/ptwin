@@ -7,7 +7,7 @@ import asyncio
 import aiohttp
 import json
 from datetime import datetime
-from config import TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
+from .config import TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
 
 class TelegramNotifier:
     def __init__(self):

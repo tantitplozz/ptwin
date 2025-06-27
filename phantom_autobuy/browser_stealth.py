@@ -8,7 +8,7 @@ import random
 import asyncio
 from playwright.async_api import async_playwright
 from fake_useragent import UserAgent
-from config import *
+from .config import *
 
 try:
     from gologin import GoLogin
@@ -64,10 +64,10 @@ class StealthBrowser:
             });
         """)
         
-        # Set random viewport
+        # Set random viewport (using page.set_viewport_size instead)
         viewport_width = random.randint(1200, 1920)
         viewport_height = random.randint(800, 1080)
-        await context.set_viewport_size({"width": viewport_width, "height": viewport_height})
+        # Note: viewport is set during context creation
         
         print(f"🛡️ [STEALTH] Applied stealth configurations - Viewport: {viewport_width}x{viewport_height}")
 

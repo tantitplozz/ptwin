@@ -9,19 +9,19 @@ import sys
 import traceback
 from datetime import datetime
 
-from browser_stealth import launch_stealth_browser
-from warmup_agent import run_warmup
-from purchase_flow import buy_iphone
-from memory import MemoryManager
-from ab_tester import ABTestRunner
-from monitor_ws import start_monitor
-from telegram_notify import send_telegram
-from config import *
+from .browser_stealth import launch_stealth_browser
+from .warmup_agent import run_warmup
+from .purchase_flow import buy_iphone
+from .memory import VectorMemory
+from .ab_tester import ABTester
+from .monitor_ws import start_monitor
+from .telegram_notify import send_telegram
+from .config import *
 
 class PhantomAutoBuyBot:
     def __init__(self):
-        self.memory = MemoryManager()
-        self.ab_tester = ABTestRunner(self.memory)
+        self.memory = VectorMemory()
+        self.ab_tester = ABTester()
         self.browser = None
         self.context = None
         self.page = None
@@ -55,8 +55,20 @@ class PhantomAutoBuyBot:
             
             # Phase 2: A/B Testing with Multiple Profiles
             print("🔥 [PHASE 2] Running A/B Testing...")
-            result = await self.ab_tester.run_flows(self.page, buy_iphone)
-            await send_telegram(f"✅ Phase 2: A/B Testing completed - Best result: {result['status']}")
+            try:
+                result = await self.ab_tester.run_flows(self.page, buy_iphone)
+                # Handle different result formats safely
+                if isinstance(result, dict):
+                    status = result.get('status', result.get('best_profile', 'completed'))
+                    success_rate = result.get('success_rate', 'unknown')
+                    await send_telegram(f"✅ Phase 2: A/B Testing completed - Best: {status} (Success: {success_rate})")
+                else:
+                    await send_telegram(f"✅ Phase 2: A/B Testing completed - Result: {str(result)}")
+            except Exception as e:
+                logger.error(f"A/B Testing error: {e}")
+                await send_telegram(f"❌ Phase 2: A/B Testing failed - {str(e)}")
+                # Create fallback result
+                result = {"status": "error", "best_profile": "Conservative", "message": str(e)}
             
             # Phase 3: Final execution with best profile
             print("🔥 [PHASE 3] Final execution...")
@@ -91,20 +103,48 @@ class PhantomAutoBuyBot:
             raise
             
     async def cleanup(self):
-        """Cleanup resources"""
+        """Cleanup resources safely"""
         print("🧹 [CLEANUP] Cleaning up resources...")
         
-        if self.page:
-            await self.page.screenshot(path="final_screenshot.png")
+        try:
+            if self.page and not self.page.is_closed():
+                try:
+                    await self.page.screenshot(path="final_screenshot.png")
+                    print("📸 [CLEANUP] Final screenshot saved")
+                except Exception as e:
+                    print(f"⚠️ [CLEANUP] Screenshot failed: {e}")
+                
+                try:
+                    await self.page.close()
+                    print("📄 [CLEANUP] Page closed")
+                except Exception as e:
+                    print(f"⚠️ [CLEANUP] Page close failed: {e}")
             
-        if self.context:
-            await self.context.close()
+            if self.context:
+                try:
+                    await self.context.close()
+                    print("🌐 [CLEANUP] Context closed")
+                except Exception as e:
+                    print(f"⚠️ [CLEANUP] Context close failed: {e}")
             
-        if self.browser:
-            await self.browser.close()
+            if self.browser:
+                try:
+                    await self.browser.close()
+                    print("🌐 [CLEANUP] Browser closed")
+                except Exception as e:
+                    print(f"⚠️ [CLEANUP] Browser close failed: {e}")
             
-        if self.monitor_task:
-            self.monitor_task.cancel()
+            if self.monitor_task:
+                try:
+                    self.monitor_task.cancel()
+                    print("📊 [CLEANUP] Monitor task cancelled")
+                except Exception as e:
+                    print(f"⚠️ [CLEANUP] Monitor cancel failed: {e}")
+                    
+        except Exception as e:
+            print(f"⚠️ [CLEANUP] General cleanup error: {e}")
+        
+        print("✅ [CLEANUP] Cleanup completed")
             
         await self.memory.save()
         await send_telegram("🛑 GOD-TIER PhantomAutoBuyBot STOPPED")

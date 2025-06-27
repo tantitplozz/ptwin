@@ -6,10 +6,10 @@ Advanced iPhone purchase automation with stealth and intelligence
 import asyncio
 import random
 from datetime import datetime
-from browser_stealth import simulate_human_behavior
-from payment_patterns import PaymentProcessor
-from otp import OTPHandler
-from config import *
+from .browser_stealth import simulate_human_behavior
+from .payment_patterns import PaymentProcessor
+from .otp import OTPHandler
+from .config import *
 
 class PurchaseFlow:
     def __init__(self, memory_manager):

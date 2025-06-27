@@ -6,8 +6,8 @@ Advanced human-like browsing patterns for maximum stealth
 import random
 import asyncio
 from datetime import datetime
-from browser_stealth import simulate_human_behavior
-from config import *
+from .browser_stealth import simulate_human_behavior
+from .config import *
 
 # Comprehensive warmup URLs for natural browsing pattern
 WARMUP_URLS = [

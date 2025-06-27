@@ -8,7 +8,7 @@ import json
 import websockets
 import logging
 from datetime import datetime
-from config import MONITOR_PORT, MONITOR_HOST
+from .config import MONITOR_PORT, MONITOR_HOST
 
 class MonitorServer:
     def __init__(self):

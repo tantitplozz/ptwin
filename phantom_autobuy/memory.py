@@ -8,9 +8,9 @@ import os
 import hashlib
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
-from config import VECTORDB_PATH
+from .config import VECTORDB_PATH
 
-class MemoryManager:
+class VectorMemory:
     def __init__(self):
         self.data = {
             'sessions': [],
@@ -175,6 +175,40 @@ class MemoryManager:
                 "Monitor for changes"
             ]
             
+    async def save(self):
+        """Save memory data to file"""
+        try:
+            os.makedirs(os.path.dirname(VECTORDB_PATH), exist_ok=True)
+            with open(VECTORDB_PATH, 'w') as f:
+                json.dump(self.data, f, indent=2, default=str)
+        except Exception as e:
+            print(f"Error saving memory: {e}")
+    
+    def add_event(self, event_type: str, data: Dict):
+        """Add event to memory"""
+        event = {
+            'type': event_type,
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        if 'events' not in self.data:
+            self.data['events'] = []
+        self.data['events'].append(event)
+    
+    def get_optimization_hints(self, event_type: str) -> List[str]:
+        """Get optimization hints for event type"""
+        events = self.data.get('events', [])
+        relevant_events = [e for e in events if e['type'] == event_type]
+        
+        if not relevant_events:
+            return ["No historical data available", "Monitor performance"]
+        
+        return [
+            "Optimize based on historical patterns",
+            "Adjust timing based on success rate",
+            "Consider A/B testing variations"
+        ]
+    
     def get_performance_metrics(self) -> Dict:
         """Get performance metrics"""
         sessions = self.data.get('sessions', [])

@@ -7,8 +7,8 @@ import random
 import asyncio
 import json
 from datetime import datetime
-from browser_stealth import simulate_human_behavior
-from config import *
+from .browser_stealth import simulate_human_behavior
+from .config import *
 
 class PaymentProcessor:
     def __init__(self, memory_manager):

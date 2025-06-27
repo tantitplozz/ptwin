@@ -8,7 +8,7 @@ import asyncio
 import re
 import requests
 from datetime import datetime
-from config import *
+from .config import *
 
 class OTPHandler:
     def __init__(self):

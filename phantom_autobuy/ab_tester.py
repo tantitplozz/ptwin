@@ -7,10 +7,10 @@ import random
 import asyncio
 import json
 from datetime import datetime
-from config import AB_TEST_PROFILES, AB_TEST_ITERATIONS
+from .config import AB_TEST_PROFILES, AB_TEST_ITERATIONS
 
-class ABTestRunner:
-    def __init__(self, memory_manager):
+class ABTester:
+    def __init__(self, memory_manager=None):
         self.memory = memory_manager
         self.test_profiles = self._generate_test_profiles()
         self.current_test_session = {
