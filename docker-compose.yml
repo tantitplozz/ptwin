@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  phantom-autobuy:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: ptwin-phantom-god-tier
+    env_file:
+      - .env
+    ports:
+      - "8686:8686"  # WebSocket Monitor
+    volumes:
+      - ./screenshots:/app/screenshots
+      - ./logs:/app/logs
+      - ./vector_db.json:/app/vector_db.json
+      - ./profiles:/app/profiles
+    restart: unless-stopped
+    environment:
+      - DISPLAY=:99
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+    shm_size: 2gb
+    networks:
+      - phantom-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8686', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Redis for advanced caching (if needed)
+  redis:
+    image: redis:7-alpine
+    container_name: ptwin-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - phantom-network
+    restart: unless-stopped
+    profiles:
+      - advanced
+
+  # Optional: PostgreSQL for advanced analytics (if needed)
+  postgres:
+    image: postgres:15-alpine
+    container_name: ptwin-postgres
+    environment:
+      POSTGRES_DB: phantom_analytics
+      POSTGRES_USER: phantom
+      POSTGRES_PASSWORD: god_tier_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - phantom-network
+    restart: unless-stopped
+    profiles:
+      - advanced
+
+networks:
+  phantom-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  redis_data:
+  postgres_data:

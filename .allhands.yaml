@@ -1,0 +1,120 @@
+project: ptwin
+version: "2.0"
+description: "GOD-TIER PhantomAutoBuyBot - Complete Full Stack Solution"
+
+environment:
+  python_version: "3.12"
+  requirements_file: "requirements.txt"
+  docker_support: true
+  
+agents:
+  - name: PhantomAutoBuyer
+    role: "GOD-TIER Phantom AutoBuy Agent with Full Stack Capabilities"
+    script: "phantom_autobuy/main.py"
+    capabilities:
+      - WarmupAgent
+      - MemoryVectorDB
+      - StealthHuman
+      - MultiProfile
+      - PaymentPatternDetector
+      - OTPBypass
+      - MonitorWebSocket
+      - TelegramNotify
+      - ABTesting
+      - DynamicAgent
+      - AntiDetection
+      - ProxyRotation
+      - HumanBehaviorSimulation
+      - ErrorRecovery
+      - PerformanceOptimization
+    config:
+      max_retries: 3
+      timeout: 900
+      stealth_mode: true
+      memory_enabled: true
+      monitoring_enabled: true
+      telegram_notifications: true
+      ab_testing_enabled: true
+      
+workflows:
+  - name: PhantomIphoneBuyFlow
+    description: "GOD-TIER Full Stack: Warmup + Memory + Stealth + Payment + OTP + Monitor + A/B Testing"
+    file: "workflows/phantom_iphone.yaml"
+    trigger: manual
+    parameters:
+      target_product: "iPhone 16 Pro Max"
+      target_storage: "1TB"
+      target_color: "Natural Titanium"
+      stealth_mode: true
+      ab_testing: true
+    steps:
+      - agent: PhantomAutoBuyer
+        task: "Execute full GOD-TIER flow with all modules"
+        
+monitoring:
+  enabled: true
+  websocket:
+    host: "0.0.0.0"
+    port: 8686
+    dashboard: true
+  telegram:
+    enabled: true
+    notifications:
+      - startup
+      - completion
+      - errors
+      - milestones
+  logging:
+    level: "INFO"
+    file: "phantom_bot.log"
+    rotation: "daily"
+    
+security:
+  stealth_mode: true
+  anti_detection: true
+  proxy_support: true
+  credential_encryption: true
+  
+performance:
+  memory_optimization: true
+  concurrent_operations: false
+  resource_monitoring: true
+  
+integrations:
+  gologin:
+    enabled: true
+    api_version: "v1"
+  telegram:
+    enabled: true
+    api_version: "bot_api"
+  playwright:
+    enabled: true
+    browser: "chromium"
+    
+deployment:
+  docker:
+    enabled: true
+    image: "ptwin:latest"
+    ports:
+      - "8686:8686"
+    volumes:
+      - "./screenshots:/app/screenshots"
+      - "./logs:/app/logs"
+      - "./vector_db.json:/app/vector_db.json"
+  environment_variables:
+    required:
+      - GOLOGIN_API_KEY
+      - GOLOGIN_PROFILE_ID
+      - TELEGRAM_TOKEN
+      - TELEGRAM_CHAT_ID
+    optional:
+      - PAYMENT_CARD_NUMBER
+      - PAYMENT_EXP
+      - PAYMENT_CVV
+      - OTP_API_KEY
+      
+documentation:
+  readme: "README.md"
+  setup_guide: "SETUP.md"
+  api_docs: "docs/api.md"
+  troubleshooting: "docs/troubleshooting.md"

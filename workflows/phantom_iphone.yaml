@@ -1,0 +1,119 @@
+name: PhantomIphoneBuyFlow
+description: "GOD-TIER Full Stack: Warmup + Memory + Stealth + Payment + OTP + Monitor + A/B Testing"
+version: "2.0"
+
+trigger:
+  type: manual
+  description: "Execute complete GOD-TIER iPhone purchase flow"
+
+parameters:
+  target_product:
+    type: string
+    default: "iPhone 16 Pro Max"
+    description: "Target iPhone model"
+  
+  target_storage:
+    type: string
+    default: "1TB"
+    description: "Storage capacity"
+    
+  target_color:
+    type: string
+    default: "Natural Titanium"
+    description: "iPhone color"
+    
+  stealth_mode:
+    type: boolean
+    default: true
+    description: "Enable maximum stealth mode"
+    
+  ab_testing:
+    type: boolean
+    default: true
+    description: "Enable A/B testing with multiple profiles"
+
+steps:
+  - name: initialization
+    agent: PhantomAutoBuyer
+    task: "Initialize GOD-TIER systems"
+    description: "Start monitor, load memory, initialize browser"
+    timeout: 60
+    
+  - name: warmup_phase
+    agent: PhantomAutoBuyer
+    task: "Execute warmup agent"
+    description: "Human-like browsing pattern for stealth preparation"
+    depends_on: [initialization]
+    timeout: 300
+    
+  - name: ab_testing_phase
+    agent: PhantomAutoBuyer
+    task: "Run A/B testing with multiple profiles"
+    description: "Test different behavioral patterns for optimal performance"
+    depends_on: [warmup_phase]
+    timeout: 600
+    condition: "{{ parameters.ab_testing }}"
+    
+  - name: purchase_execution
+    agent: PhantomAutoBuyer
+    task: "Execute iPhone purchase flow"
+    description: "Complete purchase with optimal profile"
+    depends_on: [ab_testing_phase]
+    timeout: 900
+    
+  - name: payment_processing
+    agent: PhantomAutoBuyer
+    task: "Process payment with pattern detection"
+    description: "Intelligent payment method selection and processing"
+    depends_on: [purchase_execution]
+    timeout: 300
+    
+  - name: otp_handling
+    agent: PhantomAutoBuyer
+    task: "Handle OTP verification"
+    description: "Advanced OTP detection and submission"
+    depends_on: [payment_processing]
+    timeout: 180
+    
+  - name: confirmation
+    agent: PhantomAutoBuyer
+    task: "Confirm purchase and extract order details"
+    description: "Final confirmation and order ID extraction"
+    depends_on: [otp_handling]
+    timeout: 120
+    
+  - name: cleanup
+    agent: PhantomAutoBuyer
+    task: "Cleanup and save session data"
+    description: "Clean resources and save memory data"
+    depends_on: [confirmation]
+    timeout: 60
+
+monitoring:
+  enabled: true
+  websocket_port: 8686
+  telegram_notifications: true
+  screenshot_on_error: true
+  performance_tracking: true
+  
+error_handling:
+  max_retries: 3
+  retry_delay: 30
+  fallback_strategy: "conservative_profile"
+  
+notifications:
+  telegram:
+    on_start: true
+    on_completion: true
+    on_error: true
+    on_step_completion: false
+    
+success_criteria:
+  - order_id_extracted: true
+  - payment_confirmed: true
+  - no_detection_events: true
+  
+failure_conditions:
+  - max_detection_events: 3
+  - timeout_exceeded: true
+  - critical_error: true
